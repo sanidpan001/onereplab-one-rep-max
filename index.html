@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OneRepLab — One-Rep Max (1RM) Calculator: Epley, Brzycki, Lander, Lombardi</title>
+<meta name="description" content="OneRepLab is a free one-rep max calculator that compares the Epley, Brzycki, Lander and Lombardi formulas side by side, with a full training percentage table, kg/lbs toggle and plate-loading suggestions for the bar.">
+<script src="https://cdn.tailwindcss.com"></script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How accurate are one-rep max calculators?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "One-rep max calculators are estimates, not measurements. When you lift a weight for 10 reps or fewer, the four major formulas (Epley, Brzycki, Lander and Lombardi) usually land within 3 to 5 percent of your true tested max. Accuracy falls off sharply beyond 12 reps, and factors like fatigue, technique and bar speed also matter. Treat the number as a smart training target, then confirm it with a real test day every 8 to 12 weeks."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the Epley formula for one-rep max?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "The Epley formula estimates your one-rep max as: weight lifted times (1 plus reps divided by 30). For example, lifting 100 kg for 5 reps gives 100 x (1 + 5/30) = about 116.7 kg. It is the most widely used formula in strength coaching because it is simple and tends to slightly overestimate, which suits lifters who want an ambitious but realistic target."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What percentage of my 1RM should I train at for strength vs muscle growth?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For maximal strength, most programs use 85 to 95 percent of your 1RM for 1 to 5 reps. For hypertrophy (muscle growth), 65 to 80 percent for 6 to 12 reps works best. Power and speed work sits around 50 to 70 percent moved explosively. Endurance work uses 50 percent or less for high reps. The training percentage table on this page maps every 5 percent step to an estimated weight and rep count so you can pick the right zone for your goal."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Should I test my true one-rep max or just use a calculator?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "For most lifters, a calculator is the safer choice. A true max test is demanding, needs a spotter and proper warm-up, and carries injury risk if technique breaks down. Estimating from a submaximal set of 3 to 8 hard reps gives you a reliable number for programming without the risk. Test a true max only when you are experienced, healthy and have a specific reason, such as entering a powerlifting meet."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How often should I retest or recalculate my one-rep max?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Recalculate every 4 to 8 weeks, or at the end of each training block. Strength adapts fastest in the first months of training, so beginners may see the estimate climb every few weeks. Intermediate and advanced lifters usually need 8 to 12 weeks to add meaningful pounds to a lift. If your rep performance at a fixed weight improves, plug the new numbers in — your training percentages should move up too."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Why do the four formulas give different 1RM numbers?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Each formula models the weight-to-reps relationship with a different curve fitted to different study data. Epley is linear and slightly optimistic, Brzycki is conservative and popular for beginners, Lander sits in the middle with a research-based curve, and Lombardi uses a power curve that often lands highest. The spread between them is normal — OneRepLab shows all four so you can see the full range and train off the consensus average."
+      }
+    }
+  ]
+}
+</script>
+<style>
+  html { scroll-behavior: smooth; }
+  body { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .font-lab { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .iron-grid { background-image: radial-gradient(rgba(234,88,12,.07) 1px, transparent 1px); background-size: 22px 22px; }
+  input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { opacity: 1; }
+  .no-print {}
+</style>
+</head>
+<body id="top" class="bg-[#111827] text-slate-200 antialiased">
+
+<!-- ===== STICKY HEADER ===== -->
+<header class="sticky top-0 z-50 bg-[#111827]/95 backdrop-blur border-b border-orange-600/40">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 h-16 flex items-center justify-between">
+    <a href="#top" class="flex items-center gap-2.5">
+      <span class="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-[#EA580C] text-[#111827] font-black text-xl" aria-hidden="true">🏋️</span>
+      <span class="text-xl font-extrabold tracking-tight text-white">One<span class="text-[#EA580C]">Rep</span>Lab</span>
+    </a>
+    <nav class="flex items-center gap-5 text-sm font-semibold">
+      <a href="#top" class="text-slate-300 hover:text-[#EA580C] transition-colors">Home</a>
+      <a href="https://fixoraa.tech" class="text-slate-300 hover:text-[#EA580C] transition-colors">More Tools</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ===== HERO ===== -->
+<section class="iron-grid border-b border-slate-800">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 py-10 sm:py-14 text-center">
+    <h1 class="text-3xl sm:text-5xl font-black text-white tracking-tight">One-Rep Max <span class="text-[#EA580C]">Calculator</span></h1>
+    <p class="mt-3 max-w-2xl mx-auto text-slate-400 text-sm sm:text-base">Enter your lift — get your estimated 1RM from four proven formulas side by side, a full training-percentage table, and exact plate loading for the bar.</p>
+    <div class="mt-5 inline-flex items-center gap-2 rounded-full border border-[#EA580C]/50 bg-[#EA580C]/10 px-4 py-1.5 text-xs sm:text-sm font-bold text-[#EA580C]">
+      <span aria-hidden="true">⚡</span> Unlimited Free Usage — no signup, no paywall
+    </div>
+  </div>
+</section>
+
+<!-- TOP AD (verbatim) -->
+<div class="no-print mx-auto max-w-6xl px-4 sm:px-6 pt-4" role="complementary" aria-label="Advertisement">
+  <div class="mx-auto text-center" style="max-width:728px">
+    <span class="block text-[10px] tracking-[0.18em] uppercase text-slate-400 mb-1.5">Advertisement</span>
+    <div class="flex justify-center overflow-hidden">
+      <div class="origin-top scale-[0.44] sm:scale-100 shrink-0">
+        <script>
+          atOptions = { 'key' : '4e68ac77881c17fe128a46565d9a4e8c', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {} };
+        </script>
+        <script src="https://www.highrevenueformat.com/4e68ac77881c17fe128a46565d9a4e8c/invoke.js"></script>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TOOL ===== -->
+<main class="mx-auto max-w-6xl px-4 sm:px-6 py-8 sm:py-10">
+
+  <!-- Input lab bench -->
+  <section aria-label="Calculator inputs" class="rounded-2xl border border-slate-700 bg-[#1F2937] p-5 sm:p-7 shadow-[0_0_40px_rgba(234,88,12,0.08)]">
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+      <h2 class="text-lg sm:text-xl font-extrabold text-white flex items-center gap-2"><span class="text-[#EA580C]">▮</span> The Lab Bench — enter your set</h2>
+      <!-- unit toggle -->
+      <div class="inline-flex rounded-lg border border-slate-600 overflow-hidden text-sm font-bold" role="group" aria-label="Weight unit">
+        <button id="unitKg" type="button" class="px-4 py-2 bg-[#EA580C] text-[#111827]">kg</button>
+        <button id="unitLb" type="button" class="px-4 py-2 bg-transparent text-slate-300 hover:text-white">lbs</button>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div>
+        <label for="weightInput" class="block text-xs font-bold uppercase tracking-wider text-[#9CA3AF] mb-1.5">Weight lifted <span id="weightUnitLabel">(kg)</span></label>
+        <input id="weightInput" type="number" min="0" step="any" value="100" inputmode="decimal"
+          class="w-full rounded-xl bg-[#111827] border border-slate-600 px-4 py-3 text-2xl font-extrabold text-white focus:outline-none focus:border-[#EA580C] focus:ring-2 focus:ring-[#EA580C]/30" placeholder="100">
+      </div>
+      <div>
+        <label for="repsInput" class="block text-xs font-bold uppercase tracking-wider text-[#9CA3AF] mb-1.5">Reps performed (1–12)</label>
+        <input id="repsInput" type="number" min="1" max="30" step="1" value="5" inputmode="numeric"
+          class="w-full rounded-xl bg-[#111827] border border-slate-600 px-4 py-3 text-2xl font-extrabold text-white focus:outline-none focus:border-[#EA580C] focus:ring-2 focus:ring-[#EA580C]/30" placeholder="5">
+      </div>
+      <div>
+        <span class="block text-xs font-bold uppercase tracking-wider text-[#9CA3AF] mb-1.5">Exercise preset</span>
+        <div class="grid grid-cols-2 gap-2" role="group" aria-label="Exercise preset">
+          <button type="button" data-lift="bench" class="lift-btn rounded-xl border px-3 py-3 text-sm font-bold transition-colors">🏋️ Bench Press</button>
+          <button type="button" data-lift="squat" class="lift-btn rounded-xl border px-3 py-3 text-sm font-bold transition-colors">🦵 Back Squat</button>
+          <button type="button" data-lift="deadlift" class="lift-btn rounded-xl border px-3 py-3 text-sm font-bold transition-colors">💪 Deadlift</button>
+          <button type="button" data-lift="overhead" class="lift-btn rounded-xl border px-3 py-3 text-sm font-bold transition-colors">🏋️‍♂️ Overhead Press</button>
+        </div>
+      </div>
+    </div>
+    <p class="mt-3 text-xs text-slate-500">Tip: use a recent hard set of 3–8 reps for the most accurate estimate. Your last entry per lift is saved on this device.</p>
+    <div id="inputAlert" class="hidden mt-4 rounded-xl border px-4 py-3 text-sm font-semibold" role="alert"></div>
+  </section>
+
+  <!-- Formula comparison cards -->
+  <section aria-label="Formula comparison" class="mt-8">
+    <div class="flex flex-wrap items-end justify-between gap-3 mb-4">
+      <h2 class="text-lg sm:text-xl font-extrabold text-white flex items-center gap-2"><span class="text-[#EA580C]">▮</span> Formula Showdown — 4 estimates, one lift</h2>
+      <p class="text-xs text-slate-500 font-lab">all 4 computed live from your set</p>
+    </div>
+    <div id="formulaCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4"></div>
+    <div id="spreadBar" class="mt-4 rounded-2xl border border-[#EA580C]/40 bg-[#EA580C]/5 px-5 py-4"></div>
+  </section>
+
+  <!-- % training table -->
+  <section aria-label="Training percentage table" class="mt-8">
+    <div class="flex flex-wrap items-end justify-between gap-3 mb-4">
+      <h2 class="text-lg sm:text-xl font-extrabold text-white flex items-center gap-2"><span class="text-[#EA580C]">▮</span> Training Percentage Table</h2>
+      <p class="text-xs text-slate-500 font-lab">based on the consensus 1RM • estimated reps via Epley</p>
+    </div>
+    <div class="overflow-x-auto rounded-2xl border border-slate-700">
+      <table class="w-full text-sm min-w-[420px]">
+        <thead>
+          <tr class="bg-[#1F2937] text-[#9CA3AF] text-xs uppercase tracking-wider">
+            <th class="px-4 py-3 text-left font-bold">% of 1RM</th>
+            <th class="px-4 py-3 text-left font-bold">Weight <span id="tableUnit">(kg)</span></th>
+            <th class="px-4 py-3 text-left font-bold">Est. reps</th>
+            <th class="px-4 py-3 text-left font-bold">Training zone</th>
+            <th class="px-4 py-3 text-right font-bold">Load it</th>
+          </tr>
+        </thead>
+        <tbody id="pctBody" class="divide-y divide-slate-800 bg-[#161d2b]"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Plate loader -->
+  <section aria-label="Plate loading suggestion" class="mt-8 rounded-2xl border border-slate-700 bg-[#1F2937] p-5 sm:p-7">
+    <h2 class="text-lg sm:text-xl font-extrabold text-white flex items-center gap-2 mb-1"><span class="text-[#EA580C]">▮</span> Plate Loader — what goes on the bar?</h2>
+    <p class="text-xs text-slate-500 mb-4">Pick a target and see exactly which plates to load per side. Bar weight: <span id="barWeightLabel" class="font-bold text-slate-300">20 kg</span> Olympic bar.</p>
+    <div class="flex flex-wrap gap-2 mb-5" role="group" aria-label="Plate target">
+      <button type="button" data-target="100" class="tgt-btn rounded-lg border px-4 py-2 text-sm font-bold transition-colors">100%</button>
+      <button type="button" data-target="95" class="tgt-btn rounded-lg border px-4 py-2 text-sm font-bold transition-colors">95%</button>
+      <button type="button" data-target="90" class="tgt-btn rounded-lg border px-4 py-2 text-sm font-bold transition-colors">90%</button>
+      <button type="button" data-target="85" class="tgt-btn rounded-lg border px-4 py-2 text-sm font-bold transition-colors">85%</button>
+      <button type="button" data-target="80" class="tgt-btn rounded-lg border px-4 py-2 text-sm font-bold transition-colors">80%</button>
+      <button type="button" data-target="75" class="tgt-btn rounded-lg border px-4 py-2 text-sm font-bold transition-colors">75%</button>
+    </div>
+    <div id="plateResult" class="rounded-xl bg-[#111827] border border-slate-700 p-4 sm:p-5"></div>
+  </section>
+
+</main>
+
+<!-- BOTTOM AD (verbatim) -->
+<div class="no-print mx-auto max-w-6xl px-4 sm:px-6 pb-4" role="complementary" aria-label="Advertisement">
+  <div class="mx-auto text-center" style="max-width:728px">
+    <span class="block text-[10px] tracking-[0.18em] uppercase text-slate-400 mb-1.5">Advertisement</span>
+    <div class="flex justify-center overflow-hidden">
+      <script async src="https://js.wpadmngr.com/static/adManager.js" data-admpid="464498"></script>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SEO ARTICLE ===== -->
+<section class="border-t border-slate-800 bg-[#0d1320]">
+  <div class="mx-auto max-w-4xl px-4 sm:px-6 py-10 sm:py-14">
+    <!-- ARTICLE-START -->
+    <article class="prose-lab text-slate-300 text-[15px] leading-relaxed space-y-5">
+      <h2 class="text-2xl sm:text-3xl font-black text-white tracking-tight">One-Rep Max Training: The Complete Guide to Estimating, Programming and Breaking Through Plateaus</h2>
+
+      <p>Walk into any serious gym and you will hear the same question asked about the bench press, the squat and the deadlift: "What is your max?" The one-rep max — written 1RM — is the heaviest weight you can lift for a single clean repetition of an exercise. It is the universal currency of strength. Powerlifters compete on it, coaches program off it, and everyday lifters use it to measure progress. But testing a true max is risky, exhausting and impractical to do often. That is why the one-rep max calculator exists: it turns an ordinary hard set into a reliable estimate of your max, and from that single number you can build months of smart training.</p>
+
+      <h3 class="text-xl font-extrabold text-white pt-2">What exactly is a one-rep max?</h3>
+      <p>A one-rep max is the maximum load you can move through the full range of motion once, with good form and no assistance. It reflects your absolute strength — the combined output of muscle size, neural drive, technique and leverages. Everything in strength programming is expressed relative to it. When a program calls for "5 sets of 5 at 80%," the percentage refers to 80% of your 1RM. Without an accurate 1RM number, every percentage on the page is a guess.</p>
+      <p>Beginners often add weight to the bar haphazardly. They feel strong one day and pile on plates; they feel tired the next and go too light. A calculated 1RM replaces that guesswork with a system. You test a hard set, the calculator gives you a number, and the training percentage table converts that number into exact weights for every session. Progress becomes planned instead of accidental.</p>
+
+      <h3 class="text-xl font-extrabold text-white pt-2">Why estimate instead of testing a true max?</h3>
+      <p>A true 1RM test is a max-effort event. It demands a long specific warm-up, a spotter you trust, and a body that is fully recovered. Miss the lift and you risk a failed rep with a loaded barbell over your chest or on your back. Do it too often and it eats into recovery without building much strength — grinding singles are a test, not training.</p>
+      <p>Estimating from a submaximal set avoids all of that. Lift a weight you can handle for 3 to 8 challenging reps, plug the numbers into a calculator, and you get a 1RM estimate that research shows lands within about 3 to 5 percent of your true max. You can repeat this every few weeks with zero extra risk, and it doubles as a productive training set. For anyone who is not competing in powerlifting, estimation is simply the better tool.</p>
+
+      <h3 class="text-xl font-extrabold text-white pt-2">The four formulas, explained</h3>
+      <p>Every 1RM calculator uses a mathematical formula that models how many reps you can perform at a given percentage of your max. Four formulas dominate the strength world, and OneRepLab computes all of them so you can see the full picture.</p>
+      <p><strong class="text-white">Epley (1985).</strong> The most famous formula in strength coaching: 1RM = weight × (1 + reps ÷ 30). Lift 100 kg for 5 reps and Epley predicts 116.7 kg. It assumes a linear relationship between reps and percentage, which makes it slightly optimistic at higher rep counts. Coaches love it because it is simple and gives lifters an ambitious target.</p>
+      <p><strong class="text-white">Brzycki (1993).</strong> The conservative counterpart: 1RM = weight × 36 ÷ (37 − reps). That same 100 kg × 5 gives 112.5 kg. Brzycki was designed for beginners and higher-rep sets, and it tends to underestimate for experienced lifters. If you want a cautious number you are confident you can hit, Brzycki is your formula.</p>
+      <p><strong class="text-white">Lander.</strong> A research-fitted curve: 1RM = (100 × weight) ÷ (101.3 − 2.67123 × reps). For 100 kg × 5 it lands around 113.7 kg — neatly between Epley and Brzycki. Lander is popular in academic studies because its curve was fitted to real lifter data rather than assumed to be linear.</p>
+      <p><strong class="text-white">Lombardi.</strong> A power-curve model: 1RM = weight × reps^0.10. For 100 kg × 5 it predicts about 117.5 kg, usually the highest of the four. Lombardi suits experienced lifters whose strength holds up well across rep ranges.</p>
+      <p>The spread between the four is not an error — it is information. It shows you the realistic range your true max lives in. Training off the average of the four, which this page calls the consensus 1RM, smooths out each formula's bias and gives you one number you can program with confidence.</p>
+
+      <h3 class="text-xl font-extrabold text-white pt-2">How to use the training percentage table</h3>
+      <p>The percentage table is where the 1RM number turns into actual workouts. It lists weights from 100% of your max down to 50%, in 5% steps, with an estimated rep count at each step. Here is how lifters use it in practice.</p>
+      <p>First, pick your goal. Maximal strength lives at 85–95% for 1–5 reps. Hypertrophy — muscle growth — thrives at 65–80% for 6–12 reps. Power and bar speed are trained at 50–70% moved explosively. Endurance work uses 50% or less for high reps. Find your zone in the table, read off the weight, and that is your working weight for the day.</p>
+      <p>Second, use the table to warm up. A classic ramp is 50% × 8, 60% × 5, 70% × 3, 80% × 1, then your working sets. The table gives you every one of those numbers instantly, so you never do mental math between sets again.</p>
+      <p>Third, track progress through the table rather than retesting. If last month you squatted 100 kg for 5 and this month you hit 100 kg for 7, your estimated 1RM climbed — and every row of your table moved up with it. That is progressive overload made visible.</p>
+
+      <h3 class="text-xl font-extrabold text-white pt-2">Programming with percentages: a simple 8-week template</h3>
+      <p>You do not need a complicated program to benefit from 1RM percentages. A proven beginner-to-intermediate template looks like this. Weeks 1–2: 3 sets of 8 at 70%. Weeks 3–4: 4 sets of 6 at 75%. Weeks 5–6: 5 sets of 5 at 80%. Week 7: 3 sets of 3 at 85%. Week 8: deload at 60% for light sets of 5, then retest a hard set and recalculate. Each week the percentage rises while reps fall — the classic recipe for strength.</p>
+      <p>More advanced lifters use daily undulating periodization: a heavy day at 85–90%, a moderate day at 75–80%, and a light speed day at 60–65%, all in the same week. The percentage table makes this trivial to set up because every day's exact weights are already computed.</p>
+
+      <h3 class="text-xl font-extrabold text-white pt-2">How to increase your one-rep max</h3>
+      <p>Strength grows from three inputs: muscle mass, neural efficiency and technique. To move your 1RM upward, train all three. Build muscle with volume in the 65–80% zone — sets of 6–12 with short rests. Build neural efficiency with heavy practice in the 85–95% zone — low reps, long rests, perfect form. And refine technique constantly: a better bar path on the bench press or a tighter brace on the squat can add kilos without adding any muscle at all.</p>
+      <p>Assistance work matters too. A stalling bench press usually needs stronger triceps and upper back; a stalling deadlift needs stronger glutes and hamstrings. Pick one or two assistance lifts per session at 60–70% for higher reps. Sleep and food are the silent multipliers — lifters who sleep under six hours consistently leave strength on the table, and a lifter in a deep calorie deficit should not expect their max to climb.</p>
+      <p>Finally, respect plateaus. When your estimated 1RM stops moving for three weeks, change the stimulus: swap the rep scheme, add a pause to the lift, or take a deload week. The calculator will tell you the moment the numbers start climbing again.</p>
+
+      <h3 class="text-xl font-extrabold text-white pt-2">Safety: the non-negotiables</h3>
+      <p>Percentages only work if every rep is a good rep. Never test or estimate from a set where your form broke down — a grinding, hitched rep inflates the input and produces a fantasy max. Always warm up through the table's lower percentages before touching heavy weight. Use safeties, pins or a trusted spotter for bench press and squat, and learn how to bail out of a failed lift before you ever need to. If you feel sharp pain, stop: no number on a calculator is worth an injury. And remember that calculators assume a fresh, well-rested lifter — if you are fatigued, sick or de-trained, subtract 5–10% from the estimate and rebuild from there.</p>
+
+      <h3 class="text-xl font-extrabold text-white pt-2">The bottom line</h3>
+      <p>Your one-rep max is the anchor of every serious strength program, and you do not need to risk a true max test to know it. A hard set of 3–8 reps, four time-tested formulas, and a full percentage table give you everything: a realistic max, a range you can trust, and exact weights for every training zone from power to hypertrophy. Plug in your latest set, read your table, load the bar exactly as suggested, and go lift. The numbers will take care of the programming — you take care of the effort.</p>
+    </article>
+    <!-- ARTICLE-END -->
+
+    <!-- FAQs -->
+    <div class="mt-12">
+      <h2 class="text-2xl font-black text-white tracking-tight mb-5">Frequently Asked Questions</h2>
+      <div class="space-y-3">
+        <details class="rounded-xl border border-slate-700 bg-[#111827] px-5 py-4 group">
+          <summary class="font-bold text-white cursor-pointer list-none flex justify-between items-center">How accurate are one-rep max calculators?<span class="text-[#EA580C] group-open:rotate-45 transition-transform text-xl leading-none">+</span></summary>
+          <p class="mt-2 text-sm text-slate-400">Very, within their limits. From a hard set of 10 reps or fewer, the four major formulas usually land within 3–5% of your true tested max. Beyond 12 reps accuracy collapses. Treat the estimate as a smart training target and confirm it with a real test day every 8–12 weeks.</p>
+        </details>
+        <details class="rounded-xl border border-slate-700 bg-[#111827] px-5 py-4 group">
+          <summary class="font-bold text-white cursor-pointer list-none flex justify-between items-center">What is the Epley formula for one-rep max?<span class="text-[#EA580C] group-open:rotate-45 transition-transform text-xl leading-none">+</span></summary>
+          <p class="mt-2 text-sm text-slate-400">1RM = weight × (1 + reps ÷ 30). Lifting 100 kg for 5 reps predicts about 116.7 kg. It is the most widely used formula in coaching — simple, and slightly optimistic, which suits lifters chasing an ambitious but realistic target.</p>
+        </details>
+        <details class="rounded-xl border border-slate-700 bg-[#111827] px-5 py-4 group">
+          <summary class="font-bold text-white cursor-pointer list-none flex justify-between items-center">What percentage of my 1RM should I train at for strength vs muscle growth?<span class="text-[#EA580C] group-open:rotate-45 transition-transform text-xl leading-none">+</span></summary>
+          <p class="mt-2 text-sm text-slate-400">Strength: 85–95% for 1–5 reps. Hypertrophy: 65–80% for 6–12 reps. Power/speed: 50–70% moved explosively. The training percentage table above maps every 5% step to a weight and estimated rep count for your goal.</p>
+        </details>
+        <details class="rounded-xl border border-slate-700 bg-[#111827] px-5 py-4 group">
+          <summary class="font-bold text-white cursor-pointer list-none flex justify-between items-center">Should I test my true one-rep max or just use a calculator?<span class="text-[#EA580C] group-open:rotate-45 transition-transform text-xl leading-none">+</span></summary>
+          <p class="mt-2 text-sm text-slate-400">For most lifters, a calculator is safer. A true max test needs a spotter, a long warm-up and full recovery, and carries real injury risk. Estimating from 3–8 hard reps gives a reliable programming number without the risk — test a true max only if you compete or have a specific reason.</p>
+        </details>
+        <details class="rounded-xl border border-slate-700 bg-[#111827] px-5 py-4 group">
+          <summary class="font-bold text-white cursor-pointer list-none flex justify-between items-center">How often should I retest or recalculate my one-rep max?<span class="text-[#EA580C] group-open:rotate-45 transition-transform text-xl leading-none">+</span></summary>
+          <p class="mt-2 text-sm text-slate-400">Every 4–8 weeks, or at the end of each training block. Beginners may see the estimate climb every few weeks; intermediate and advanced lifters typically need 8–12 weeks. When your reps at a fixed weight improve, recalculate and move your training percentages up.</p>
+        </details>
+        <details class="rounded-xl border border-slate-700 bg-[#111827] px-5 py-4 group">
+          <summary class="font-bold text-white cursor-pointer list-none flex justify-between items-center">Why do the four formulas give different 1RM numbers?<span class="text-[#EA580C] group-open:rotate-45 transition-transform text-xl leading-none">+</span></summary>
+          <p class="mt-2 text-sm text-slate-400">Each models the weight-to-reps curve differently: Epley is linear and slightly optimistic, Brzycki is conservative, Lander is research-fitted and middle-of-the-road, Lombardi uses a power curve that often lands highest. The spread is normal — OneRepLab shows all four so you can train off the consensus average.</p>
+        </details>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="border-t border-slate-800">
+  <div class="mx-auto max-w-6xl px-4 sm:px-6 py-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+    <p>© 2026 OneRepLab. Train smart, lift heavy, stay safe.</p>
+    <p><a href="#top" class="hover:text-[#EA580C]">Home</a> <span class="mx-2">·</span> <a href="https://fixoraa.tech" class="hover:text-[#EA580C]">More Tools</a></p>
+  </div>
+</footer>
+
+<script>
+/* PURE-LOGIC-START */
+const PLATE_KG = [25, 20, 15, 10, 5, 2.5, 1.25];
+const PLATE_LB = [45, 35, 25, 10, 5, 2.5];
+const BAR_KG = 20, BAR_LB = 45;
+
+function epley(w, r) { return w * (1 + r / 30); }
+function brzycki(w, r) { return w * 36 / (37 - r); }
+function lander(w, r) { return (100 * w) / (101.3 - 2.67123 * r); }
+function lombardi(w, r) { return w * Math.pow(r, 0.10); }
+
+function calcAll(w, r) {
+  let e, b, la, lo;
+  if (r === 1) { e = b = la = lo = w; }
+  else { e = epley(w, r); b = brzycki(w, r); la = lander(w, r); lo = lombardi(w, r); }
+  const vals = [e, b, la, lo];
+  const mn = Math.min.apply(null, vals), mx = Math.max.apply(null, vals);
+  const avg = vals.reduce(function (a, c) { return a + c; }, 0) / 4;
+  return { epley: e, brzycki: b, lander: la, lombardi: lo, min: mn, max: mx, avg: avg, spread: mx - mn };
+}
+
+function validateInput(w, r) {
+  const errors = [], warnings = [];
+  if (!isFinite(w) || w <= 0) errors.push('Enter a weight greater than 0.');
+  if (!isFinite(r) || Math.floor(r) !== r || r < 1) errors.push('Reps must be a whole number of 1 or more.');
+  if (isFinite(r) && r > 12) warnings.push('Estimates lose accuracy beyond ~10 reps — treat this as a rough guide.');
+  return { ok: errors.length === 0, errors: errors, warnings: warnings };
+}
+
+function buildPctTable(oneRM) {
+  const rows = [];
+  for (let pct = 100; pct >= 50; pct -= 5) {
+    const weight = Math.round(oneRM * pct / 100 * 10) / 10;
+    const reps = Math.max(1, Math.round(30 * (100 / pct - 1)));
+    rows.push({ pct: pct, weight: weight, reps: reps });
+  }
+  return rows;
+}
+
+function kgToLbs(kg) { return kg * 2.20462; }
+function lbsToKg(lb) { return lb / 2.20462; }
+function round1(x) { return Math.round(x * 10) / 10; }
+
+function plateLoading(target, unit) {
+  const plates = unit === 'kg' ? PLATE_KG : PLATE_LB;
+  const bar = unit === 'kg' ? BAR_KG : BAR_LB;
+  const step = unit === 'kg' ? 2.5 : 5;
+  const rounded = Math.round(target / step) * step;
+  if (rounded < bar) return { ok: false, rounded: rounded, bar: bar, reason: 'below-bar' };
+  let perSide = (rounded - bar) / 2;
+  const perSidePlates = [];
+  for (let i = 0; i < plates.length; i++) {
+    const p = plates[i];
+    while (perSide + 1e-9 >= p) { perSidePlates.push(p); perSide = Math.round((perSide - p) * 1000) / 1000; }
+  }
+  return { ok: true, rounded: rounded, bar: bar, perSide: perSidePlates, leftover: Math.round(perSide * 1000) / 1000 };
+}
+
+function zoneFor(pct) {
+  if (pct >= 95) return 'Max effort';
+  if (pct >= 85) return 'Strength';
+  if (pct >= 75) return 'Strength / power';
+  if (pct >= 65) return 'Hypertrophy';
+  if (pct >= 55) return 'Hypertrophy / endurance';
+  return 'Endurance / technique';
+}
+/* PURE-LOGIC-END */
+
+/* ---------- app state + DOM wiring ---------- */
+const LIFTS = { bench: 'Bench Press', squat: 'Back Squat', deadlift: 'Deadlift', overhead: 'Overhead Press' };
+const DEFAULTS = { bench: 100, squat: 120, deadlift: 140, overhead: 60 };
+const LS_KEY = 'onereplab-v1';
+
+let state = { unit: 'kg', lift: 'bench', targetPct: 85 };
+try {
+  const saved = JSON.parse(localStorage.getItem(LS_KEY) || '{}');
+  if (saved.unit === 'kg' || saved.unit === 'lb') state.unit = saved.unit;
+  if (saved.lift && LIFTS[saved.lift]) state.lift = saved.lift;
+  state.perLift = saved.perLift || {};
+} catch (e) { state.perLift = {}; }
+
+function persist() {
+  try { localStorage.setItem(LS_KEY, JSON.stringify({ unit: state.unit, lift: state.lift, perLift: state.perLift })); } catch (e) {}
+}
+
+const $ = function (id) { return document.getElementById(id); };
+const weightInput = $('weightInput'), repsInput = $('repsInput');
+
+function currentWeight() { return parseFloat(weightInput.value); }
+function currentReps() { return parseInt(repsInput.value, 10); }
+
+function fmt(w) { return round1(w).toString().replace(/\.0$/, ''); }
+
+function renderUnitToggle() {
+  const kg = state.unit === 'kg';
+  $('unitKg').className = 'px-4 py-2 ' + (kg ? 'bg-[#EA580C] text-[#111827]' : 'bg-transparent text-slate-300 hover:text-white');
+  $('unitLb').className = 'px-4 py-2 ' + (!kg ? 'bg-[#EA580C] text-[#111827]' : 'bg-transparent text-slate-300 hover:text-white');
+  $('weightUnitLabel').textContent = '(' + state.unit + ')';
+  $('tableUnit').textContent = '(' + state.unit + ')';
+  $('barWeightLabel').textContent = (state.unit === 'kg' ? BAR_KG + ' kg' : BAR_LB + ' lb') + ' Olympic bar';
+}
+
+function renderLiftButtons() {
+  document.querySelectorAll('.lift-btn').forEach(function (b) {
+    const active = b.getAttribute('data-lift') === state.lift;
+    b.className = 'lift-btn rounded-xl border px-3 py-3 text-sm font-bold transition-colors ' +
+      (active ? 'border-[#EA580C] bg-[#EA580C]/15 text-white' : 'border-slate-600 bg-[#111827] text-slate-400 hover:border-slate-400 hover:text-white');
+  });
+}
+
+function renderTargetButtons() {
+  document.querySelectorAll('.tgt-btn').forEach(function (b) {
+    const active = parseInt(b.getAttribute('data-target'), 10) === state.targetPct;
+    b.className = 'tgt-btn rounded-lg border px-4 py-2 text-sm font-bold transition-colors ' +
+      (active ? 'border-[#EA580C] bg-[#EA580C] text-[#111827]' : 'border-slate-600 text-slate-300 hover:border-[#EA580C] hover:text-white');
+  });
+}
+
+const FORMULA_META = [
+  { key: 'epley', name: 'Epley', formula: 'w × (1 + r/30)', note: 'Most popular · slightly optimistic' },
+  { key: 'brzycki', name: 'Brzycki', formula: 'w × 36 / (37 − r)', note: 'Conservative · great for beginners' },
+  { key: 'lander', name: 'Lander', formula: '(100 × w) / (101.3 − 2.67 × r)', note: 'Research-fitted curve' },
+  { key: 'lombardi', name: 'Lombardi', formula: 'w × r^0.10', note: 'Power curve · often highest' }
+];
+
+function render() {
+  const w = currentWeight(), r = currentReps();
+  const v = validateInput(w, r);
+  const alertBox = $('inputAlert');
+
+  if (!v.ok) {
+    alertBox.className = 'mt-4 rounded-xl border border-red-500/50 bg-red-500/10 px-4 py-3 text-sm font-semibold text-red-300';
+    alertBox.innerHTML = '⚠️ ' + v.errors.join(' ');
+    alertBox.classList.remove('hidden');
+    $('formulaCards').innerHTML = '';
+    $('spreadBar').innerHTML = '<p class="text-sm text-slate-400">Enter a valid set above to see your formula comparison.</p>';
+    $('pctBody').innerHTML = '<tr><td colspan="5" class="px-4 py-6 text-center text-slate-500 text-sm">No data yet.</td></tr>';
+    renderPlate(null);
+    return;
+  }
+  if (v.warnings.length) {
+    alertBox.className = 'mt-4 rounded-xl border border-amber-500/50 bg-amber-500/10 px-4 py-3 text-sm font-semibold text-amber-300';
+    alertBox.innerHTML = '⚠️ ' + v.warnings.join(' ');
+    alertBox.classList.remove('hidden');
+  } else { alertBox.classList.add('hidden'); }
+
+  const res = calcAll(w, r);
+  const u = state.unit;
+
+  // formula cards
+  let cards = '';
+  FORMULA_META.forEach(function (m) {
+    const val = res[m.key];
+    const tag = val === res.max ? '<span class="ml-2 rounded bg-[#EA580C] text-[#111827] text-[10px] font-black px-1.5 py-0.5 uppercase">highest</span>'
+      : val === res.min ? '<span class="ml-2 rounded bg-slate-600 text-slate-200 text-[10px] font-black px-1.5 py-0.5 uppercase">lowest</span>' : '';
+    const ring = val === res.max ? 'border-[#EA580C]/70' : val === res.min ? 'border-slate-600' : 'border-slate-700';
+    cards += '<div class="rounded-2xl border ' + ring + ' bg-[#1F2937] p-5">' +
+      '<div class="flex items-center justify-between"><h3 class="font-extrabold text-white">' + m.name + tag + '</h3></div>' +
+      '<p class="mt-3 text-3xl font-black text-[#EA580C]">' + fmt(val) + ' <span class="text-sm font-bold text-slate-400">' + u + '</span></p>' +
+      '<p class="mt-2 font-lab text-[11px] text-slate-500">' + m.formula + '</p>' +
+      '<p class="mt-1 text-[11px] text-slate-500">' + m.note + '</p></div>';
+  });
+  $('formulaCards').innerHTML = cards;
+
+  // spread banner
+  $('spreadBar').innerHTML =
+    '<div class="flex flex-wrap items-center gap-x-8 gap-y-2">' +
+    '<div><p class="text-[11px] uppercase tracking-wider text-[#9CA3AF] font-bold">Consensus 1RM (avg of 4)</p>' +
+    '<p class="text-2xl font-black text-white">' + fmt(res.avg) + ' <span class="text-sm font-bold text-slate-400">' + u + '</span></p></div>' +
+    '<div><p class="text-[11px] uppercase tracking-wider text-[#9CA3AF] font-bold">Spread (max − min)</p>' +
+    '<p class="text-2xl font-black text-[#EA580C]">' + fmt(res.spread) + ' <span class="text-sm font-bold text-slate-400">' + u + '</span></p></div>' +
+    '<p class="text-xs text-slate-500 max-w-md">Range: <span class="font-bold text-slate-300">' + fmt(res.min) + '</span> (Brzycki) → <span class="font-bold text-slate-300">' + fmt(res.max) + '</span> (Lombardi). Program off the consensus; treat the spread as your margin.</p></div>';
+
+  // % table
+  const rows = buildPctTable(res.avg);
+  let tbody = '';
+  rows.forEach(function (row) {
+    const hl = row.pct === 100 ? 'bg-[#EA580C]/10' : row.pct === 85 ? 'bg-white/[0.02]' : '';
+    const zone = zoneFor(row.pct);
+    const zoneBadge = row.pct >= 85 ? 'text-[#EA580C]' : 'text-slate-400';
+    tbody += '<tr class="' + hl + '">' +
+      '<td class="px-4 py-2.5 font-black text-white">' + row.pct + '%</td>' +
+      '<td class="px-4 py-2.5 font-bold text-slate-200">' + fmt(row.weight) + ' <span class="text-xs text-slate-500">' + u + '</span></td>' +
+      '<td class="px-4 py-2.5 text-slate-300">' + (row.reps > 30 ? '30+' : row.reps) + '</td>' +
+      '<td class="px-4 py-2.5 text-xs font-bold ' + zoneBadge + '">' + zone + '</td>' +
+      '<td class="px-4 py-2.5 text-right"><button type="button" data-pct="' + row.pct + '" class="row-load rounded-lg border border-slate-600 px-2.5 py-1 text-xs font-bold text-slate-300 hover:border-[#EA580C] hover:text-white transition-colors">Load ⚙</button></td></tr>';
+  });
+  $('pctBody').innerHTML = tbody;
+  document.querySelectorAll('.row-load').forEach(function (b) {
+    b.addEventListener('click', function () { state.targetPct = parseInt(b.getAttribute('data-pct'), 10); renderTargetButtons(); renderPlate(res); });
+  });
+
+  renderPlate(res);
+}
+
+function renderPlate(res) {
+  const box = $('plateResult');
+  if (!res) { box.innerHTML = '<p class="text-sm text-slate-500">Plate suggestions will appear here once your 1RM is calculated.</p>'; return; }
+  const u = state.unit;
+  const target = res.avg * state.targetPct / 100;
+  const pl = plateLoading(target, u);
+  if (!pl.ok) {
+    box.innerHTML = '<p class="text-sm text-amber-300 font-semibold">⚠️ ' + fmt(pl.rounded) + ' ' + u + ' is lighter than the ' + pl.bar + ' ' + u + ' bar itself — just use the empty bar.</p>';
+    return;
+  }
+  let chips = '';
+  pl.perSide.forEach(function (p) {
+    chips += '<span class="inline-block rounded-lg bg-[#EA580C] text-[#111827] font-black text-sm px-3 py-1.5 mr-1.5 mb-1.5">' + p + '</span>';
+  });
+  if (!pl.perSide.length) chips = '<span class="text-sm text-slate-400">Empty bar — no plates needed.</span>';
+  const roundedNote = Math.abs(pl.rounded - target) > 1e-9
+    ? '<p class="mt-2 text-xs text-slate-500">Rounded to the nearest loadable increment: ' + fmt(pl.rounded) + ' ' + u + ' (target was ' + fmt(target) + ' ' + u + ').</p>' : '';
+  box.innerHTML =
+    '<div class="flex flex-wrap items-center justify-between gap-3 mb-3">' +
+    '<p class="text-sm text-slate-400">Target: <span class="font-black text-white">' + state.targetPct + '% = ' + fmt(target) + ' ' + u + '</span></p>' +
+    '<p class="text-sm text-slate-400">Bar: <span class="font-black text-white">' + pl.bar + ' ' + u + '</span></p></div>' +
+    '<p class="text-xs uppercase tracking-wider text-[#9CA3AF] font-bold mb-2">Load per side (largest plate closest to center):</p>' +
+    '<div>' + chips + '<span class="inline-block rounded-lg border border-slate-500 text-slate-300 font-bold text-sm px-3 py-1.5 mb-1.5">collar</span></div>' +
+    '<p class="mt-3 text-sm text-slate-300">Total loaded: <span class="font-black text-[#EA580C]">' + fmt(pl.rounded) + ' ' + u + '</span></p>' +
+    roundedNote;
+}
+
+function saveLiftState() {
+  state.perLift[state.lift] = { w: weightInput.value, r: repsInput.value };
+  persist();
+}
+
+function loadLiftState() {
+  const s = state.perLift[state.lift];
+  if (s && s.w !== undefined) { weightInput.value = s.w; repsInput.value = s.r; }
+  else { weightInput.value = state.unit === 'kg' ? DEFAULTS[state.lift] : Math.round(kgToLbs(DEFAULTS[state.lift])); repsInput.value = 5; }
+}
+
+// events
+weightInput.addEventListener('input', function () { saveLiftState(); render(); });
+repsInput.addEventListener('input', function () { saveLiftState(); render(); });
+
+$('unitKg').addEventListener('click', function () { setUnit('kg'); });
+$('unitLb').addEventListener('click', function () { setUnit('lbs'); });
+function setUnit(u) {
+  if (state.unit === u) return;
+  const cur = parseFloat(weightInput.value);
+  if (isFinite(cur) && cur > 0) {
+    const conv = u === 'kg' ? lbsToKg(cur) : kgToLbs(cur);
+    weightInput.value = round1(conv);
+  }
+  state.unit = u;
+  persist(); renderUnitToggle(); loadLiftState(); render();
+}
+
+document.querySelectorAll('.lift-btn').forEach(function (b) {
+  b.addEventListener('click', function () {
+    state.lift = b.getAttribute('data-lift');
+    persist(); renderLiftButtons(); loadLiftState(); render();
+  });
+});
+
+document.querySelectorAll('.tgt-btn').forEach(function (b) {
+  b.addEventListener('click', function () {
+    state.targetPct = parseInt(b.getAttribute('data-target'), 10);
+    renderTargetButtons();
+    const w = currentWeight(), r = currentReps(), v = validateInput(w, r);
+    renderPlate(v.ok ? calcAll(w, r) : null);
+  });
+});
+
+// init
+renderUnitToggle(); renderLiftButtons(); renderTargetButtons(); loadLiftState(); render();
+</script>
+</body>
+</html>
